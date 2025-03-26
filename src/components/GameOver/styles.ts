@@ -1,8 +1,12 @@
 import styled from 'styled-components'
 import { colors } from '../../styles'
 
-export const Overlay = styled.div`
-  display: none;
+type OverlayProps = {
+  $gameOver: boolean
+}
+
+export const Overlay = styled.div<OverlayProps>`
+  display: ${(props) => (props.$gameOver ? 'flex' : 'none')};
   justify-content: center;
   align-items: center;
   position: absolute;

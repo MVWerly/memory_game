@@ -1,24 +1,41 @@
-import { useState } from 'react'
+import { useDispatch } from 'react-redux'
 
 import * as S from './styles'
+import { flip, gameOver, match } from '../../store/reducers/memoryGame'
+import { useEffect } from 'react'
 
 type Props = {
-  techIcon: string
+  tech: Tech
 }
 
-const Card = ({ techIcon }: Props) => {
-  const [cardFlip, setCardFlip] = useState(false)
+const Card = ({ tech }: Props) => {
+  const dispatch = useDispatch()
 
-  const image = `assets/images/${techIcon}.png`
+  const flipCard = (card: Tech) => {
+    dispatch(flip(card))
+  }
+
+  useEffect(() => {
+    if (tech.flipped) {
+      const timer = setTimeout(() => {
+        dispatch(match())
+        dispatch(gameOver())
+      }, 2000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [tech.flipped, dispatch])
+
+  const image = `assets/images/${tech.name}.png`
 
   return (
     <>
       <S.CardContainer
-        className={cardFlip ? 'flip' : ''}
-        onClick={() => setCardFlip(!cardFlip)}
+        className={tech.flipped ? 'flip' : ''}
+        onClick={() => flipCard(tech)}
       >
         <S.CardFront>
-          <img src={image} alt={techIcon} />
+          <img src={image} alt={tech.name} />
         </S.CardFront>
         <S.CardBack>
           <p>&lt;/&gt;</p>

@@ -1,5 +1,14 @@
+declare type Tech = {
+  name: string
+  flipped: boolean
+  lock: boolean
+  id: number
+}
+
 declare type GameMemory = {
-  techs: string[]
-  lockFirst: boolean
-  lockSecond: boolean
+  techs: Tech[]
+  newGame: Tech[]
+  gameOver: boolean
+  firstCard: string
+  secondCard: string
 }

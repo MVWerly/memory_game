@@ -1,18 +1,24 @@
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { useEffect, useMemo } from 'react'
+
 import Card from '../Card'
-import { Board } from './styles'
+
 import { RooReducer } from '../../store'
+import { start } from '../../store/reducers/memoryGame'
+
+import { Board } from './styles'
 
 const BoardGame = () => {
-  const { techs } = useSelector((state: RooReducer) => state.memoryGame)
+  const dispatch = useDispatch()
+  const { techs, newGame, gameOver } = useSelector(
+    (state: RooReducer) => state.memoryGame
+  )
 
-  const duplicatedArray = (array: string[]) => {
-    return array.map((tech) => tech).concat(array.map((tech) => tech))
-  }
+  const duplicatedArray = techs
+    .map((tech) => tech)
+    .concat(techs.map((tech) => tech))
 
-  const duplicatedTechs = duplicatedArray(techs)
-
-  const shuffleArray = (array: string[]) => {
+  const shuffleArray = (array: Tech[]) => {
     for (let i = array.length - 1; i > 0; i--) {
       const randomIndex = Math.floor(Math.random() * (i + 1)) as number
       ;[array[i], array[randomIndex]] = [array[randomIndex], array[i]]
@@ -20,15 +26,20 @@ const BoardGame = () => {
     return array
   }
 
-  const shuffledTechs = shuffleArray(duplicatedTechs)
+  const shuffledTechs = useMemo(() => shuffleArray(duplicatedArray), [techs])
+
+  useEffect(() => {
+    dispatch(start(shuffledTechs))
+    if (gameOver) {
+      dispatch(start(shuffledTechs))
+    }
+  }, [dispatch, shuffledTechs, gameOver])
 
   return (
     <>
       <Board className="container">
-        {shuffledTechs.map((tech, index) => (
-          <>
-            <Card techIcon={tech} key={index} />
-          </>
+        {newGame.map((tech, index) => (
+          <Card tech={tech} key={index} />
         ))}
       </Board>
     </>
